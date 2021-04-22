@@ -40,6 +40,7 @@ function Pathfinder() {
                 }
                 grid.push(currentRow);
             }
+            console.log(grid);
             setgridAndMouse({
                 grid: grid
             });
@@ -54,32 +55,64 @@ function Pathfinder() {
     //     setgridAndMouse({ grid: newGrid, mouseIsPressed: true });
     // }
     function handleMouseDown(row, col) {
-        const newGrid = getNewGridWithWallToggled(gridAndMouse.grid, row, col);
-        setgridAndMouse({ grid: newGrid, mouseIsPressed: true });
+        // const newGrid = getNewGridWithWallToggled(gridAndMouse.grid, row, col);
+        // setgridAndMouse(prev => {
+        //     return {
+        //         ...prev,
+        //         [gridAndMouse.grid[row][col].props.isWall]: !gridAndMouse.grid[row][col].props.isWall,
+        //         // newGrid,
+        //         mouseIsPressed: true
+        //     };
+        // });
+        // let newGrid = [];
+        // newGrid = getNewGridWithWallToggled(gridAndMouse.grid, row, col);
+        getNewGridWithWallToggled(row, col);
+        setgridAndMouse(prev => {
+            return {
+                ...prev,
+                mouseIsPressed: true
+            };
+        });
     }
 
-    // function handleMouseEnter(row, col) {
-    //     if (!this.state.mouseIsPressed) return;
-    //     const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
-    //     this.setState({ grid: newGrid });
-    // }
+    function handleMouseEnter(row, col) {
+        if (!gridAndMouse.mouseIsPressed) {
+            return;
+        } else {
+            getNewGridWithWallToggled(row, col);
+        }
+    }
 
     function handleMouseUp() {
-        setgridAndMouse({ mouseIsPressed: false });
+        setgridAndMouse(prev => {
+            return {
+                ...prev,
+                mouseIsPressed: false
+            };
+        });
     }
 
-    function getNewGridWithWallToggled(grid, row, col) {
-        const newGrid = grid.slice();
-        const node = newGrid[row][col];
-        console.log(node);
-        const newNode = {
-            ...node,
-            [node.props.isWall]: !node.props.isWall
-        };
-        newGrid[row][col] = newNode;
-        return newGrid;
-    }
+    // function getNewGridWithWallToggled(grid, row, col) {
+    //     const newGrid = grid.slice();
+    //     const node = newGrid[row][col].props;
+    //     // node.props.isWall = !node.props.isWall;
+    //     const newNode = {
+    //         ...node,
+    //         isWall: !node.isWall
+    //     };
+    //     newGrid[row][col].props = newNode;
+    //     return newGrid;
+    // }
 
+    const getNewGridWithWallToggled = (row, col) => {
+        let node = document.getElementById("node-" + row + "-" + col);
+        if (!(node.classList.contains("node-start") || node.classList.contains("node-start")))
+            node.classList.add("node-wall");
+
+        setgridAndMouse(prev => {
+            return { ...prev, mouseIsPressed: true };
+        });
+    };
     return (
         <div className="grid">
             {gridAndMouse.grid.map((row, rowIdx) => {
@@ -95,9 +128,9 @@ function Pathfinder() {
                                     isFinish={rowIdx === FINISH_NODE_ROW && nodeIdx === FINISH_NODE_COL}
                                     isWall={false}
                                     mouseIsPressed={gridAndMouse.mouseIsPressed}
-                                    mouseDown={handleMouseDown}
-                                    // onMouseEnter={(row, col) => this.handleMouseEnter(row, col)}
-                                    // onMouseUp={() => this.handleMouseUp()}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseUp={handleMouseUp}
                                     row={rowIdx}
                                 ></Node>
                             );

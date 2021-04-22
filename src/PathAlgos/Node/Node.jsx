@@ -32,9 +32,9 @@ function Node(props) {
         <div
             id={`node-${props.row}-${props.col}`}
             className={"node " + extraClassName}
-            onMouseDown={() => props.mouseDown(props.row, props.col)}
-            // onMouseEnter={() => onMouseEnter(props.row, props.col)}
-            // onMouseUp={() => onMouseUp()}
+            onMouseDown={() => props.onMouseDown(props.row, props.col)}
+            onMouseEnter={() => props.onMouseEnter(props.row, props.col)}
+            onMouseUp={() => props.onMouseUp()}
         ></div>
     );
 }
