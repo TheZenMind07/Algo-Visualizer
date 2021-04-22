@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Node from "./Node/Node";
+import { dijkstra, getNodesInShortestPathOrder } from "./Algos/djikstra";
 
 import "./Pathfinder.css";
 
@@ -40,7 +41,7 @@ function Pathfinder() {
                 }
                 grid.push(currentRow);
             }
-            console.log(grid);
+            // console.log(grid);
             setgridAndMouse({
                 grid: grid
             });
@@ -113,31 +114,69 @@ function Pathfinder() {
             return { ...prev, mouseIsPressed: true };
         });
     };
+
+    function animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+        for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+            if (i === visitedNodesInOrder.length) {
+                setTimeout(() => {
+                    animateShortestPath(nodesInShortestPathOrder);
+                }, 10 * i);
+                return;
+            }
+            setTimeout(() => {
+                const node = visitedNodesInOrder[i];
+                document.getElementById(`node-${node.row}-${node.col}`).className = "node node-visited";
+            }, 10 * i);
+        }
+    }
+
+    function animateShortestPath(nodesInShortestPathOrder) {
+        for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+            setTimeout(() => {
+                const node = nodesInShortestPathOrder[i];
+                document.getElementById(`node-${node.props.row}-${node.props.col}`).className =
+                    "node node-shortest-path";
+            }, 50 * i);
+        }
+    }
+
+    function visualizeDijkstra() {
+        let startNode = gridAndMouse.grid[START_NODE_ROW][START_NODE_COL];
+        let finishNode = gridAndMouse.grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+        // console.log(startNode, finishNode);
+        let visitedNodesInOrder = dijkstra(gridAndMouse.grid, startNode, finishNode);
+        let nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+        animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    }
+
     return (
-        <div className="grid">
-            {gridAndMouse.grid.map((row, rowIdx) => {
-                return (
-                    <div key={rowIdx}>
-                        {row.map((node, nodeIdx) => {
-                            const { row, col, isFinish, isStart, isWall } = node;
-                            return (
-                                <Node
-                                    key={nodeIdx}
-                                    col={nodeIdx}
-                                    isStart={rowIdx === START_NODE_ROW && nodeIdx === START_NODE_COL}
-                                    isFinish={rowIdx === FINISH_NODE_ROW && nodeIdx === FINISH_NODE_COL}
-                                    isWall={false}
-                                    mouseIsPressed={gridAndMouse.mouseIsPressed}
-                                    onMouseDown={handleMouseDown}
-                                    onMouseEnter={handleMouseEnter}
-                                    onMouseUp={handleMouseUp}
-                                    row={rowIdx}
-                                ></Node>
-                            );
-                        })}
-                    </div>
-                );
-            })}
+        <div>
+            <button onClick={() => visualizeDijkstra()}>Visualize Dijkstra's Algorithm</button>
+            <div className="grid">
+                {gridAndMouse.grid.map((row, rowIdx) => {
+                    return (
+                        <div key={rowIdx}>
+                            {row.map((node, nodeIdx) => {
+                                const { row, col, isFinish, isStart, isWall } = node;
+                                return (
+                                    <Node
+                                        key={nodeIdx}
+                                        col={nodeIdx}
+                                        isStart={rowIdx === START_NODE_ROW && nodeIdx === START_NODE_COL}
+                                        isFinish={rowIdx === FINISH_NODE_ROW && nodeIdx === FINISH_NODE_COL}
+                                        isWall={false}
+                                        mouseIsPressed={gridAndMouse.mouseIsPressed}
+                                        onMouseDown={handleMouseDown}
+                                        onMouseEnter={handleMouseEnter}
+                                        onMouseUp={handleMouseUp}
+                                        row={rowIdx}
+                                    ></Node>
+                                );
+                            })}
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
     //     col,
