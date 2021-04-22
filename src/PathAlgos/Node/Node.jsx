@@ -22,10 +22,9 @@ import "./Node.css";
 function Node(props) {
     return (
         <div
-            id={`node-${props.row}-${props.col}`}
-            className={`node ${props.extraClassName}`}
-            // onMouseDown={() => onMouseDown(props.row, props.col)}
-            // onMouseEnter={() => onMouseEnter(props.row, props.col)}
+            id={"node-" + props.row + "-" + props.col}
+            className={"node" + props.extraClassName}
+            onMouseDown={() => props.onMouseDown(props.row, props.col)}
             // onMouseUp={() => onMouseUp()}
         ></div>
     );
