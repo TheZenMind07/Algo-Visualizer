@@ -1,64 +1,37 @@
-import Node from "../Node/Node";
 // Performs Dijkstra's algorithm; returns *all* nodes in the order
 // in which they were visited. Also makes nodes point back to their
 // previous node, effectively allowing us to compute the shortest path
 // by backtracking from the finish node.
 export function dijkstra(grid, startNode, finishNode) {
-    let node_row = startNode.props.row;
-    let node_col = startNode.props.col;
     const visitedNodesInOrder = [];
-    startNode = (
-        <Node
-            col={startNode.props.col}
-            distance={0}
-            isFinish={startNode.props.isFinish}
-            isStart={startNode.props.isStart}
-            isVisited={startNode.props.isVisited}
-            isWall={startNode.props.isWall}
-            previousNode={startNode.props.previousNode}
-            row={startNode.props.row}
-        />
-    );
-    grid[node_row][node_col] = startNode;
+    startNode.distance = 0;
     const unvisitedNodes = getAllNodes(grid);
     while (!!unvisitedNodes.length) {
+        console.log(unvisitedNodes);
         sortNodesByDistance(unvisitedNodes);
         console.log(unvisitedNodes);
         const closestNode = unvisitedNodes.shift();
         // If we encounter a wall, we skip it.
-        if (closestNode.props.isWall) continue;
-        //     // If the closest node is at a distance of infinity,
-        //     // we must be trapped and should therefore stop.
-        if (closestNode.props.distance === Infinity) return visitedNodesInOrder;
-        closestNode = (
-            <Node
-                col={colsestNode.props.col}
-                distance={colsestNode.props.distance}
-                isFinish={colsestNode.props.isFinish}
-                isStart={colsestNode.props.isStart}
-                isVisited={true}
-                isWall={colsestNode.props.isWall}
-                previousNode={colsestNode.props.previousNode}
-                row={colsestNode.props.row}
-            />
-        );
-        grid[start_row][start_row] = startNode;
+        if (closestNode.isWall) continue;
+        // If the closest node is at a distance of infinity,
+        // we must be trapped and should therefore stop.
+        if (closestNode.distance === Infinity) return visitedNodesInOrder;
+        closestNode.isVisited = true;
         visitedNodesInOrder.push(closestNode);
-        if (closestNode.props.row === finishNode.props.row && closestNode.props.col === finishNode.props.col)
-            return visitedNodesInOrder;
+        if (closestNode === finishNode) return visitedNodesInOrder;
         updateUnvisitedNeighbors(closestNode, grid);
     }
 }
 
 function sortNodesByDistance(unvisitedNodes) {
-    unvisitedNodes.sort((nodeA, nodeB) => nodeA.props.distance - nodeB.props.distance);
+    unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
 }
 
 function updateUnvisitedNeighbors(node, grid) {
     const unvisitedNeighbors = getUnvisitedNeighbors(node, grid);
     for (const neighbor of unvisitedNeighbors) {
-        neighbor.props.distance = node.props.distance + 1;
-        neighbor.props.previousNode = node;
+        neighbor.distance = node.distance + 1;
+        neighbor.previousNode = node;
     }
 }
 
@@ -89,7 +62,7 @@ export function getNodesInShortestPathOrder(finishNode) {
     let currentNode = finishNode;
     while (currentNode !== null) {
         nodesInShortestPathOrder.unshift(currentNode);
-        currentNode = currentNode.props.previousNode;
+        currentNode = currentNode.previousNode;
     }
     return nodesInShortestPathOrder;
 }
